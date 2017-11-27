@@ -43,8 +43,12 @@ catch (PDOException $e)
 						echo '<p>Zalogowany jako: '.$login.' <a href="wyloguj.php">(Wyloguj)</a></p>';
 						echo '<hr>';
 						$succ_login = true;
-						
-						echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br></br></br>';
+
+						if ($_SESSION['is_admin'])
+						{
+							echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br>';
+							echo '<a href="zatwierdzOddanie.php"><button>Potwierdź oddanie</button></a></br></br></br>';
+						}
 						echo '<a href="index.php"><button>Wypożyczalnia</button></a></br>';
 						echo '<a href="mojeWypozyczenia.php"><button>Moje wypożyczenia i rezerwacje</button></a></br>';
 					}
@@ -91,7 +95,7 @@ catch (PDOException $e)
 						echo "<input name='rezerwuj' class='button' type='submit' value='Zarezerwuj'></input>";
 						echo '</form></br></br>';
 						
-						$selekcik = $db->prepare("SELECT * FROM wypozyczenia WHERE itemID = :id ORDER BY date_from;");
+						$selekcik = $db->prepare("SELECT * FROM wypozyczenia WHERE itemID = :id AND oddano = 0 ORDER BY date_from;");
 						$selekcik->bindParam(':id', $_GET['itemID']);
 						$selekcik->execute();
 						if ($selekcik->rowCount() > 0)

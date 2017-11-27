@@ -42,9 +42,12 @@ if ($selekcik->rowCount() > 0)
 	}
 	$date = date('Y-m-d');
 
-	$usuwanie = $db->prepare("DELETE FROM wypozyczenia WHERE id = :id;");
-	$usuwanie->bindParam(':id', $_POST['itemID']);
-	$usuwanie->execute();
+	//$usuwanie = $db->prepare("DELETE FROM wypozyczenia WHERE id = :id;");
+	//$usuwanie->bindParam(':id', $_POST['itemID']);
+	//$usuwanie->execute();
+	$zmiana = $db->prepare("UPDATE wypozyczenia SET oddano = '1', data_oddania = NOW() WHERE id = :id;");
+	$zmiana->bindParam(':id', $_POST['itemID']);
+	$zmiana->execute();
 	
 	if ($date >= $result['date_from'] && $date <= $result['date_to'])
 	{

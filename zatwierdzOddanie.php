@@ -50,11 +50,16 @@ catch (PDOException $e)
 						echo '<hr>';
 						$succ_login = true;
 
-						if ($_SESSION['is_admin'])
+						if (!$_SESSION['is_admin'])
 						{
-							echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br>';
-							echo '<a href="zatwierdzOddanie.php"><button>Potwierdź oddanie</button></a></br></br></br>';
+							$_SESSION['login_err'] = 'Nie admin';
+							header('Location: index.php');
+							return;
 						}
+
+						echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br>';
+						echo '<a href="zatwierdzOddanie.php"><button>Potwierdź oddanie</button></a></br></br></br>';
+
 						echo '<a href="index.php"><button>Wypożyczalnia</button></a></br>';
 						echo '<a href="mojeWypozyczenia.php"><button>Moje wypożyczenia i rezerwacje</button></a></br>';
 					}
@@ -88,7 +93,7 @@ catch (PDOException $e)
 		</div>
 		<div id="wypozyczalniaMain">
 			<a href="index.php"><button style="float: left"><<</button></a>
-			MOJE WYPOŻYCZENIA I REZERWACJE
+			ZATWIERDŹ ODDANIE PRZEDMIOTÓW
 			<hr>
 			<?php
 				if ($succ_login)
@@ -96,11 +101,14 @@ catch (PDOException $e)
 					echo '<div class="doWypozyczenia">';
 					echo '<center>WYPOŻYCZENIA:<table border="1" style="text-align: center">';
 					echo '	<tr>
+								<td class="wypozyczNazwa">
+									Nazwa użytkownika
+								</td>
 								<td>
 									Zdjęcie
 								</td>
 								<td class="wypozyczNazwa">
-									Nazwa
+									Nazwa przedmiotu
 								</td>
 								<td class="wypozyczDzien">
 									Data początkowa
@@ -109,11 +117,14 @@ catch (PDOException $e)
 									Data końcowa
 								</td>
 								<td class="wypozyczDzien">
+									Data oddania
+								</td>
+								<td class="wypozyczDzien">
 									Akcja
 								</td>
 							</tr>';
 
-					$selekcik = $db->prepare("SELECT w.id AS idx, p.obrazek, p.nazwa, w.type, w.date_from, w.date_to, w.oddano FROM wypozyczenia AS w INNER JOIN przedmioty AS p ON w.itemID = p.id WHERE w.userID = :userID AND (w.oddano = 0 OR w.oddano = 1) ORDER BY w.date_from;");
+					$selekcik = $db->prepare("SELECT a.login, w.id AS idx, p.obrazek, p.nazwa, w.type, w.date_from, w.date_to, w.oddano, w.data_oddania FROM ((wypozyczenia AS w INNER JOIN przedmioty AS p ON w.itemID = p.id) INNER JOIN account AS a ON a.ID = w.userID) WHERE w.oddano = '1' ORDER BY a.login, w.date_from;");
 					$selekcik->bindParam(':userID', $_SESSION['login_id']);
 					$selekcik->execute();
 					if ($selekcik->rowCount() > 0)
@@ -128,12 +139,15 @@ catch (PDOException $e)
 							if (!empty($result[$i]['obrazek']))
 								$img = 'data:image/jpeg;base64,'.base64_encode($result[$i]['obrazek']);
 
-							$now = time();
+							$now = strtotime($result[$i]['data_oddania']);
 							$date_to = strtotime($result[$i]['date_to']);
 							$datediff = $date_to - $now;
 							$rest_day = floor($datediff / (60 * 60 * 24));
 
 							echo '	<tr>
+										<td class="wypozyczNazwa">
+											'.$result[$i]['login'].'
+										</td>
 										<td>
 											<img class="wypozyczImage" src="'.$img.'"></img>
 										</td>
@@ -146,16 +160,16 @@ catch (PDOException $e)
 										<td class="wypozyczDzien">
 											'.$result[$i]['date_to'].'
 										</td>
-										<td class="wypozyczDzien">';
-											if ($result[$i]['oddano'] == 0)
-												echo '<p '.($rest_day<0?'style="color:#E90000"':'').'>'.($rest_day<0?'Dni opóźnienia':'Pozostało dni').': '.abs($rest_day).'</p></br>
-													<form action="oddajPrzedmiot.php" method="post" enctype="multipart/form-data">
-													<input type="text" name="itemID" value="'.$result[$i]['idx'].'" hidden></input>
-													<input type="submit" value="Oddaj przedmiot"></input>
-												</form>';
-											else if ($result[$i]['oddano'] == 1)
-												echo 'Oczekuje na zatwierdzenie';
-										echo '</td>
+										<td class="wypozyczDzien">
+											'.$result[$i]['data_oddania'].'
+										</td>
+										<td class="wypozyczDzien">
+										<p '.($rest_day<0?'style="color:#E90000"':'').'>'.($rest_day<0?'Dni opóźnienia':'Pozostało dni').': '.abs($rest_day).'</p></br>
+											<form action="oddajPrzedmiotAdmin.php" method="post" enctype="multipart/form-data">
+											<input type="text" name="itemID" value="'.$result[$i]['idx'].'" hidden></input>
+											<input type="submit" value="Potwierdź oddanie"></input>
+										</form>
+										</td>
 									</tr>';
 						}
 					}
@@ -164,11 +178,14 @@ catch (PDOException $e)
 					
 					echo '<table border="1" style="text-align: center">';
 					echo '	<tr>
+								<td class="wypozyczNazwa">
+									Nazwa użytkownika
+								</td>
 								<td>
 									Zdjęcie
 								</td>
 								<td class="wypozyczNazwa">
-									Nazwa
+									Nazwa przedmiotu
 								</td>
 								<td class="wypozyczDzien">
 									Data początkowa
@@ -193,6 +210,9 @@ catch (PDOException $e)
 								$img = 'data:image/jpeg;base64,'.base64_encode($result[$i]['obrazek']);
 
 							echo '	<tr>
+										<td class="wypozyczNazwa">
+											'.$result[$i]['user'].'
+										</td>
 										<td>
 											<img class="wypozyczImage" src="'.$img.'"></img>
 										</td>
@@ -237,6 +257,6 @@ catch (PDOException $e)
 			unset($_SESSION['wypozyczStatus']);
 		}
 		else if ($selekcik->rowCount() <= 0)
-			echo '<script> swal({title: "Brak", text: "Nie masz żadnych zarezerwowanych lub wypożyczonych przedmiotów!", icon: "info"}) .then(() => {window.location.href = "index.php";})</script>';
+			echo '<script> swal({title: "Brak", text: "Brak przedmiotów do zatwierdzenia!", icon: "info"}) .then(() => {window.location.href = "index.php";})</script>';
 	?>
 </html>

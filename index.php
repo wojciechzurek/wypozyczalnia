@@ -40,7 +40,12 @@ catch (PDOException $e)
 						echo '<hr>';
 						$succ_login = true;
 						
-						echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br></br></br>';
+						if ($_SESSION['is_admin'])
+						{
+							echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br>';
+							echo '<a href="zatwierdzOddanie.php"><button>Potwierdź oddanie</button></a></br></br></br>';
+						}
+
 						echo '<a href="index.php"><button>Wypożyczalnia</button></a></br>';
 						echo '<a href="mojeWypozyczenia.php"><button>Moje wypożyczenia i rezerwacje</button></a></br>';
 					}
@@ -130,6 +135,8 @@ catch (PDOException $e)
 				$tekst = 'Złe hasło!';
 			else if ($_SESSION['login_err'] == 'No login')
 				$tekst = 'Nie znaleziono takiego konta!';
+			else if ($_SESSION['login_err'] == 'Nie admin')
+				$tekst = 'Nie jesteś administratorem!';
 			else if ($_SESSION['login_err'] == 'Wylogowano')
 			{
 				$good = true;

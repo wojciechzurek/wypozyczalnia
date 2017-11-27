@@ -79,8 +79,17 @@ if ($uploadInfo == "okej")
 						echo '<p>Zalogowany jako: '.$login.' <a href="wyloguj.php">(Wyloguj)</a></p>';
 						echo '<hr>';
 						$succ_login = true;
-						
-						echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br></br></br>';
+
+						if (!$_SESSION['is_admin'])
+						{
+							$_SESSION['login_err'] = 'Nie admin';
+							header('Location: index.php');
+							return;
+						}
+
+						echo '<a href="dodajPrzedmiot.php"><button>Dodaj przedmiot</button></a></br>';
+						echo '<a href="zatwierdzOddanie.php"><button>Potwierdź oddanie</button></a></br></br></br>';
+
 						echo '<a href="index.php"><button>Wypożyczalnia</button></a></br>';
 						echo '<a href="mojeWypozyczenia.php"><button>Moje wypożyczenia i rezerwacje</button></a></br>';
 					}
