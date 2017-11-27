@@ -1,0 +1,122 @@
+body
+{
+	margin: 0;
+	padding: 0;
+	background-color: #92B558;
+	width: 100%;
+	height: 100%;
+}
+#gora
+{
+	text-align: center;
+}
+#panelUzytkownika
+{
+	float: left;
+	height: 400px;
+	width: 20%;
+	background-color: #DC4C46;
+	text-align: center;
+	margin-left: 4px;
+}
+#wypozyczalniaMain
+{
+	float: left;
+	background-color: green;
+	width: 70%;
+	min-height: 580px;
+	max-height: 580px;
+	margin-left: 10px;
+	padding: 10px;
+	text-align: center;
+	overflow-y: auto;
+}
+#stopka
+{
+	clear: both;
+}
+.doWypozyczenia
+{
+	
+	padding: 10px;
+}
+#stopka
+{
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+}
+.wypozyczImage
+{
+	width: 100px;
+	height: 100px
+}
+.wypozyczNazwa
+{
+	width: 150px;
+}
+.wypozyczOpis
+{
+	width: 300px;
+}
+.wypozyczDzien
+{
+	margin-left: 15px;
+	width: 150px;
+}
+.wypozyczKara
+{
+	margin-left: 15px;
+	width: 200px;
+}
+.wypozyczHref
+{
+	margin-left: 30px;
+	width: 150px;
+}
+.wypozyczImageBigger
+{
+	max-height: 200px;
+}
+#itemName
+{
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+}
+#itemDesc
+{
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+}
+#itemCost
+{
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+}
+#itemCostPunish
+{
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+}
+.button
+{
+	background-color: #0079a1;
+	border: 1px solid black;
+	color: white;
+	padding: 5px 12px;
+	text-align: center;
+	font-size: 16px;
+	cursor: pointer;
+	border-radius: 30px;
+	margin-left: 5px;
+}
+
+.button:hover
+{
+	background-color: #16a319;
+}
