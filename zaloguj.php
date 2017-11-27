@@ -2,6 +2,7 @@
 session_start();
 
 $_SESSION['zalogowany'] = false;
+$_SESSION['is_admin'] = false;
 if ((!isset($_POST['login'])) || (!isset($_POST['pass'])))
 {
 	$_SESSION['login_err'] = 'no data';
@@ -20,7 +21,7 @@ catch (PDOException $e)
 	header('Location: index.php');
 }
 
-$check = $db->prepare("SELECT id, password FROM account WHERE login = :login LIMIT 1;");
+$check = $db->prepare("SELECT id, password, admin FROM account WHERE login = :login LIMIT 1;");
 $check->bindParam(":login", $_POST['login']);
 $check->execute();
 if ($check->rowCount() > 0)
@@ -32,6 +33,7 @@ if ($check->rowCount() > 0)
 		$_SESSION['login_id'] = $check['id'];
 		$_SESSION['zalogowany'] = true;
 		$_SESSION['login_err'] = 'okej';
+		$_SESSION['is_admin'] = $check['admin'];
 		header('Location: index.php');
 	}
 	else

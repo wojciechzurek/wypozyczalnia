@@ -46,6 +46,15 @@ if ($date_from_my > $date_to_my)
 	return;
 }
 
+$actual_date = date('Y-m-d');
+if ($date_from_my < $actual_date || $date_to_my < $actual_date)
+{
+	$_SESSION['wypozyczErr'] = 'Nie możesz wypożyczać wstecz!';
+	$_SESSION['wypozyczStatus'] = false;
+	header('Location: wypozycz.php?itemID='.$_POST['przedmiotID']);
+	return;
+}
+
 $type = "";
 $tekscik = "";
 if (isset($_POST['wypozycz']))
